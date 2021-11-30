@@ -1,7 +1,3 @@
-![ITRLog](https://user-images.githubusercontent.com/58651329/80480060-96624d80-8982-11ea-994f-153f4f987fbe.png)
-
-The simplified usage of [Zap](https://github.com/uber-go/zap) and [Lumberjack](https://github.com/natefinch/lumberjack) logging systems in Go for easier usage of the library.
-
 # Installation
 ```
 go get -u github.com/itrepablik/pwd
