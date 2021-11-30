@@ -28,7 +28,7 @@ func init() {
 func main() {
 	errInfo := ""
 
-	// Use Argon2id for password hashing
+	// Generate Argon2id secured hash password
 	argon2Hash, err := pwd.HashAndSalt("yourPlainPassword")
 	if err != nil {
 		errInfo = fmt.Sprintf("error hashing password: %s", err.Error())
@@ -37,7 +37,7 @@ func main() {
 	}
 	fmt.Println("argon2Hash: ", argon2Hash)
 
-	// Check if the password is correct
+	// Validate Argon2id secured hash password
 	isPwdCorrect, err := pwd.CheckPasswordHash("yourPlainPassword", argon2Hash)
 	if err != nil {
 		errInfo := fmt.Sprintf("error checking password: %s", err.Error())
