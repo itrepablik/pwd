@@ -1,3 +1,5 @@
+![pwd package](https://user-images.githubusercontent.com/58651329/144160290-996de8ec-3a13-48fe-9474-99cac1367aa8.png)
+
 # Installation
 ```
 go get -u github.com/itrepablik/pwd
