@@ -33,15 +33,6 @@ type Argon2Configs struct {
 	KeyLength   uint32 // The length of the key to use (in bytes)
 }
 
-// Set default Argon2Configs configurations for Argon2 hashing
-var Default = &Argon2Configs{
-	Memory:      MEMORY,
-	Iterations:  ITER,
-	Parallelism: PARALLEL,
-	SaltLength:  SALT_LEN,
-	KeyLength:   KEY_LEN,
-}
-
 // NewArgon2id returns a new pwd Argon2id instance
 func NewArgon2id() *Argon2Configs {
 	return &Argon2Configs{
