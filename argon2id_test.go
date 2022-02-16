@@ -3,64 +3,87 @@ package pwd
 import "testing"
 
 func TestSetArgon2Configs(t *testing.T) {
-	SetArgon2Configs(64*1024, 1, 2, 16, 32)
-	if agc.Memory != 64*1024 {
-		t.Errorf("Memory should be 64*1024, but %d", agc.Memory)
+	// To customize the pwd Argon2id configs, use the SetArgon2Configs() method
+	var pwd = &Argon2Configs{
+		Memory:      128 * 1024,
+		Iterations:  1,
+		Parallelism: 2,
+		SaltLength:  16,
+		KeyLength:   32,
+	}
+	pwd.SetArgon2Configs(pwd)
+
+	if pwd.Memory != 128*1024 {
+		t.Errorf("Expected pwd.Memory to be 128*1024, got %d", pwd.Memory)
 	}
 
-	if agc.Iterations != 1 {
-		t.Errorf("Iterations should be 1, but %d", agc.Iterations)
+	if pwd.Iterations != 1 {
+		t.Errorf("Expected pwd.Iterations to be 1, got %d", pwd.Iterations)
 	}
 
-	if agc.Parallelism != 2 {
-		t.Errorf("Parallelism should be 2, but %d", agc.Parallelism)
+	if pwd.Parallelism != 2 {
+		t.Errorf("Expected pwd.Parallelism to be 2, got %d", pwd.Parallelism)
 	}
 
-	if agc.SaltLength != 16 {
-		t.Errorf("SaltLength should be 16, but %d", agc.SaltLength)
+	if pwd.SaltLength != 16 {
+		t.Errorf("Expected pwd.SaltLength to be 16, got %d", pwd.SaltLength)
 	}
 
-	if agc.KeyLength != 32 {
-		t.Errorf("KeyLength should be 32, but %d", agc.KeyLength)
+	if pwd.KeyLength != 32 {
+		t.Errorf("Expected pwd.KeyLength to be 32, got %d", pwd.KeyLength)
 	}
 }
 
 func TestHashAndSalt(t *testing.T) {
-	SetArgon2Configs(64*1024, 1, 2, 16, 32)
-	pwd := "password"
+	// To customize the pwd Argon2id configs, use the SetArgon2Configs() method
+	var pwd = &Argon2Configs{
+		Memory:      128 * 1024,
+		Iterations:  1,
+		Parallelism: 2,
+		SaltLength:  16,
+		KeyLength:   32,
+	}
+	pwd.SetArgon2Configs(pwd)
 
-	argon2Hash, err := HashAndSalt(pwd)
+	argon2Hash, err := pwd.HashAndSalt("password")
 	if err != nil {
-		t.Errorf("error hashing password: %s", err.Error())
+		t.Errorf("Expected err to be nil, got %v", err)
 	}
 
-	if argon2Hash == "" {
-		t.Errorf("hash should not be empty")
+	if len(argon2Hash) != 98 {
+		t.Errorf("Expected len(argon2Hash) to be 98, got %d", len(argon2Hash))
 	}
 
 	t.Logf("argon2Hash: %s", argon2Hash)
 }
 
 func TestCheckPasswordHash(t *testing.T) {
-	SetArgon2Configs(64*1024, 1, 2, 16, 32)
-	pwd := "password"
+	// To customize the pwd Argon2id configs, use the SetArgon2Configs() method
+	var pwd = &Argon2Configs{
+		Memory:      128 * 1024,
+		Iterations:  1,
+		Parallelism: 4,
+		SaltLength:  16,
+		KeyLength:   32,
+	}
+	pwd.SetArgon2Configs(pwd)
 
-	argon2Hash, err := HashAndSalt(pwd)
+	argon2Hash, err := pwd.HashAndSalt("password")
 	if err != nil {
-		t.Errorf("error hashing password: %s", err.Error())
+		t.Errorf("Expected err to be nil, got %v", err)
 	}
 
-	if argon2Hash == "" {
-		t.Errorf("hash should not be empty")
+	if len(argon2Hash) != 98 {
+		t.Errorf("Expected len(argon2Hash) to be 98, got %d", len(argon2Hash))
 	}
 
 	t.Logf("argon2Hash: %s", argon2Hash)
 
-	if ok, err := CheckPasswordHash("password", argon2Hash); err != nil {
-		t.Errorf("error checking password: %s", err.Error())
+	if ok, err := pwd.CheckPasswordHash("password", argon2Hash); err != nil {
+		t.Errorf("Expected err to be nil, got %v", err)
 	} else if !ok {
-		t.Errorf("incorrect password")
+		t.Errorf("Incorrect password")
 	} else {
-		t.Logf("password is correct")
+		t.Logf("Password is correct")
 	}
 }

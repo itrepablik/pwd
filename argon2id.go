@@ -13,7 +13,6 @@ import (
 )
 
 var rwm = &sync.RWMutex{}
-var agc *Argon2Configs
 
 // Default Argon2Configs
 const (
@@ -34,52 +33,51 @@ type Argon2Configs struct {
 	KeyLength   uint32 // The length of the key to use (in bytes)
 }
 
-// InitArgon2Configs initializes the Argon2Configs
-func InitArgon2Configs(memory, iterations uint32, parallelism uint8, saltLength, keyLength uint32) *Argon2Configs {
-	agc = &Argon2Configs{
-		Memory:      memory,
-		Iterations:  iterations,
-		Parallelism: parallelism,
-		SaltLength:  saltLength,
-		KeyLength:   keyLength,
-	}
-	return agc
+// Set default Argon2Configs configurations for Argon2 hashing
+var Default = &Argon2Configs{
+	Memory:      MEMORY,
+	Iterations:  ITER,
+	Parallelism: PARALLEL,
+	SaltLength:  SALT_LEN,
+	KeyLength:   KEY_LEN,
 }
 
-// SetLogInit sets the custom log requirement to initialize the itr logger.
-func SetArgon2Configs(memory, iterations uint32, parallelism uint8, saltLength, keyLength uint32) *Argon2Configs {
-	rwm.Lock()
-	defer rwm.Unlock()
+// NewArgon2id returns a new pwd Argon2id instance
+func NewArgon2id() *Argon2Configs {
+	return &Argon2Configs{
+		Memory:      MEMORY,
+		Iterations:  ITER,
+		Parallelism: PARALLEL,
+		SaltLength:  SALT_LEN,
+		KeyLength:   KEY_LEN,
+	}
+}
+
+// SetArgon2Configs sets the custom Argon2Configs to use for Argon2 hashing.
+func (agc *Argon2Configs) SetArgon2Configs(conf *Argon2Configs) {
+	rwm.RLocker().Lock()
+	defer rwm.RLocker().Unlock()
 
 	// Set default minimal requirements for Argon2
-	if memory <= 0 {
-		memory = MEMORY
+	if conf.Memory <= 0 {
+		agc.Memory = MEMORY
 	}
-	if iterations <= 0 {
-		iterations = ITER
+	if conf.Iterations <= 0 {
+		agc.Iterations = ITER
 	}
-	if parallelism <= 0 {
-		parallelism = PARALLEL
+	if conf.Parallelism <= 0 {
+		agc.Parallelism = PARALLEL
 	}
-	if saltLength <= 0 {
-		saltLength = SALT_LEN
+	if conf.SaltLength <= 0 {
+		agc.SaltLength = SALT_LEN
 	}
-	if keyLength <= 0 {
-		keyLength = KEY_LEN
+	if conf.KeyLength <= 0 {
+		agc.KeyLength = KEY_LEN
 	}
-
-	// Re-configure the itrlog
-	agc = InitArgon2Configs(memory, iterations, parallelism, saltLength, keyLength)
-	return agc
-}
-
-func init() {
-	// Init the default Argon2Configs
-	agc = InitArgon2Configs(MEMORY, ITER, PARALLEL, SALT_LEN, KEY_LEN)
 }
 
 // HashAndSalt generates a hashed password using the given password and parameters and returns the hash
-func HashAndSalt(password string) (string, error) {
+func (agc *Argon2Configs) HashAndSalt(password string) (string, error) {
 	// Generate a random salt
 	saltBytes := make([]byte, agc.SaltLength)
 	_, err := rand.Read(saltBytes)
@@ -103,9 +101,9 @@ func HashAndSalt(password string) (string, error) {
 }
 
 // CheckPasswordHash returns true if the password hash matches the password
-func CheckPasswordHash(password, hash string) (bool, error) {
+func (agc *Argon2Configs) CheckPasswordHash(password, hash string) (bool, error) {
 	// Decode the hash
-	salt, key, err := DecodeHashPassword(hash)
+	salt, key, err := agc.DecodeHashPassword(hash)
 	if err != nil {
 		return false, err
 	}
@@ -122,7 +120,7 @@ func CheckPasswordHash(password, hash string) (bool, error) {
 }
 
 // DecodeHashPassword decodes the password hash and returns the salt and the key
-func DecodeHashPassword(hash string) ([]byte, []byte, error) {
+func (agc *Argon2Configs) DecodeHashPassword(hash string) ([]byte, []byte, error) {
 	// Check the format
 	vals := strings.Split(hash, "$")
 	if len(vals) != 6 {
