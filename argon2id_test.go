@@ -68,6 +68,7 @@ func TestCheckPasswordHash(t *testing.T) {
 	}
 	pwd.SetArgon2Configs(pwd)
 
+	// To generate a secure password hash, use the HashAndSalt() method
 	argon2Hash, err := pwd.HashAndSalt("password")
 	if err != nil {
 		t.Errorf("Expected err to be nil, got %v", err)
@@ -79,6 +80,7 @@ func TestCheckPasswordHash(t *testing.T) {
 
 	t.Logf("argon2Hash: %s", argon2Hash)
 
+	// To verify a password hash, use the CheckPasswordHash() method
 	if ok, err := pwd.CheckPasswordHash("password", argon2Hash); err != nil {
 		t.Errorf("Expected err to be nil, got %v", err)
 	} else if !ok {

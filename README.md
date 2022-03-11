@@ -11,7 +11,7 @@ go get -u github.com/itrepablik/pwd
 
 # Usage
 This is how you can use the simplified argon2id in your next Go project.
-```
+```go
 package main
 
 import (
